@@ -18,19 +18,19 @@ function draw() {
     level = mic.getLevel();
   }
 
-  let amplified = map(level, 0.005, 0.04, 0, 1);
+  let amplified = map(level, 0.012, 0.06, 0, 1);
   amplified = constrain(amplified, 0, 1);
 
   if (amplified > growthLevel) {
     growthLevel = amplified;
   }
 
-  growthLevel *= 0.97;
+  growthLevel *= 0.96;
   growthLevel = constrain(growthLevel, 0, 1);
 
-  let depth = floor(map(growthLevel, 0, 1, 4, 12));
-  let baseLength = map(growthLevel, 0, 1, 80, 190);
-  let angle = map(growthLevel, 0, 1, PI / 10, PI / 3);
+  let depth = floor(map(growthLevel, 0, 1, 3, 11));
+  let baseLength = map(growthLevel, 0, 1, 70, 180);
+  let angle = map(growthLevel, 0, 1, PI / 12, PI / 3);
 
   showInfo(level);
 
@@ -77,6 +77,10 @@ function resetTree() {
   growthLevel = 0;
 }
 
+function testGrowth() {
+  growthLevel = 1;
+}
+
 function showInfo(level) {
   fill(255);
   noStroke();
@@ -101,8 +105,4 @@ function backgroundGradient() {
     stroke(c);
     line(0, i, width, i);
   }
-}
-
-function testGrowth() {
-  growthLevel = 1;
 }
