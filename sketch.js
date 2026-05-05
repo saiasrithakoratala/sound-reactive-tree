@@ -157,9 +157,8 @@ function drawLeavesAndFruits(leafAmount) {
 
   let leafSize = map(leafAmount, 0.3, 1, 8, 14);
 
-  // Fuller leaves at high growth to cover outer branch tips
+  // leaves
   fill(60, 180, 80, 230);
-
   ellipse(0, 0, leafSize, leafSize * 0.75);
 
   if (leafAmount > 0.5) {
@@ -172,14 +171,23 @@ function drawLeavesAndFruits(leafAmount) {
     ellipse(3, 4, leafSize * 0.8, leafSize * 0.6);
   }
 
-  // Few small fruits
-  if (leafAmount > 0.75 && random(1) < 0.01) {
-    fill(220, 40, 40);
-    circle(0, -6, 4);
+  // clear fruits with outline
+  if (leafAmount > 0.65 && random(1) < 0.02) {
+    stroke(120, 20, 20);
+    strokeWeight(1);
+    fill(230, 40, 40);
+    circle(0, -8, 6);
+    noStroke();
+  }
+
+  if (leafAmount > 0.85 && random(1) < 0.015) {
+    stroke(140, 80, 10);
+    strokeWeight(1);
+    fill(255, 170, 40);
+    circle(-6, 1, 6);
+    noStroke();
   }
 }
-
-
 
 function drawGround() {
   noStroke();
