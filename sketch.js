@@ -46,7 +46,7 @@ function draw() {
 
   growthLevel = constrain(growthLevel, 0, 1);
 
-  let depth = floor(map(growthLevel, 0, 1, 4, 8));
+  let depth = floor(map(growthLevel, 0, 1, 4, 7));
   let baseLength = map(growthLevel, 0, 1, 50, 135);
   let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
 
@@ -112,9 +112,11 @@ function showStartScreen() {
 }
 
 function branch(len, depth, angle, leafAmount) {
+  if (!(growthLevel > 0.6 && len < 20)) {
   strokeWeight(map(len, 4, 135, 0.7, 9));
   stroke(75, 45, 20, 180);
   line(0, 0, 0, -len);
+}
 
   translate(0, -len);
 
