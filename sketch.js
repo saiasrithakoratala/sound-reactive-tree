@@ -23,12 +23,10 @@ function draw() {
   targetGrowth = constrain(targetGrowth, 0, 1);
 
   if (targetGrowth > growthLevel) {
-    growthLevel = lerp(growthLevel, targetGrowth, 0.15);
+    growthLevel = lerp(growthLevel, targetGrowth, 0.18);
   } else {
-    growthLevel = lerp(growthLevel, targetGrowth, 0.035);
+    growthLevel = lerp(growthLevel, targetGrowth, 0.03);
   }
-
-  growthLevel = constrain(growthLevel, 0, 1);
 
   let depth = floor(map(growthLevel, 0, 1, 3, 12));
   let baseLength = map(growthLevel, 0, 1, 70, 190);
@@ -64,25 +62,26 @@ function drawBranch(len, depth, angle) {
 }
 
 function drawLeafAndFruit() {
-  let leafSize = map(growthLevel, 0, 1, 5, 11);
-
-  fill(100, 255, 150);
   noStroke();
-  ellipse(0, 0, leafSize, leafSize * 0.8);
+
+  // Leaves
+  fill(90, 255, 130);
+  ellipse(0, 0, 10, 7);
+
+  // Fruits appear earlier and bigger
+  if (growthLevel > 0.25) {
+    fill(255, 70, 70);
+    circle(5, -4, 9);
+  }
 
   if (growthLevel > 0.45) {
-    fill(255, 210, 80);
-    circle(4, -4, map(growthLevel, 0.45, 1, 3, 7));
+    fill(255, 190, 50);
+    circle(-5, 4, 9);
   }
 
   if (growthLevel > 0.65) {
-    fill(255, 90, 80);
-    circle(-4, 3, map(growthLevel, 0.65, 1, 3, 8));
-  }
-
-  if (growthLevel > 0.8) {
-    fill(255, 140, 40);
-    circle(2, 5, map(growthLevel, 0.8, 1, 3, 7));
+    fill(255, 120, 30);
+    circle(0, 7, 10);
   }
 
   stroke(255);
