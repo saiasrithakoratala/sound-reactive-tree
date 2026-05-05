@@ -4,18 +4,25 @@ body {
   text-align: center;
   background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
   color: white;
+  min-height: 100vh;
 }
 
 h1 {
-  margin-top: 20px;
+  margin: 20px 0 8px;
+  font-size: 42px;
+}
+
+p {
+  margin: 8px 0;
+  font-size: 18px;
 }
 
 .controls {
-  margin: 15px;
+  margin: 15px 0;
 }
 
 button {
-  padding: 12px 22px;
+  padding: 12px 24px;
   margin: 6px;
   border: none;
   border-radius: 10px;
@@ -32,8 +39,11 @@ button:hover {
 #canvas-container {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
 }
 
 canvas {
+  max-width: 95vw;
+  height: auto;
   border-radius: 12px;
 }
