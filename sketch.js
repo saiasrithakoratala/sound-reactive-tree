@@ -1,53 +1,44 @@
 let mic;
-let smoothedLevel = 0;
 let growthLevel = 0;
-let started = false;
 let micStarted = false;
 
 function setup() {
   let canvas = createCanvas(900, 600);
   canvas.parent("canvas-container");
   angleMode(RADIANS);
-
   mic = new p5.AudioIn();
 }
 
 function draw() {
   backgroundGradient();
 
-  if (!started) {
-    fill(255);
-    noStroke();
-    textAlign(CENTER);
-    textSize(24);
-    text("Click Start Microphone to begin", width / 2, height / 2);
-    return;
+  let level = 0;
+
+  if (micStarted) {
+    level = mic.getLevel();
   }
 
-  let level = mic.getLevel();
-
-  smoothedLevel = lerp(smoothedLevel, level, 0.35);
-
-  let amplified = smoothedLevel * 700;
+  let amplified = map(level, 0.005, 0.04, 0, 1);
+  amplified = constrain(amplified, 0, 1);
 
   if (amplified > growthLevel) {
     growthLevel = amplified;
   }
 
-  growthLevel *= 0.985;
+  growthLevel *= 0.97;
   growthLevel = constrain(growthLevel, 0, 1);
 
-  let depth = floor(map(growthLevel, 0, 1, 4, 13));
+  let depth = floor(map(growthLevel, 0, 1, 4, 12));
   let baseLength = map(growthLevel, 0, 1, 80, 190);
-  let branchAngle = map(growthLevel, 0, 1, PI / 10, PI / 3);
+  let angle = map(growthLevel, 0, 1, PI / 10, PI / 3);
 
-  showSoundInfo(level);
+  showInfo(level);
 
   push();
   translate(width / 2, height);
   stroke(255);
   strokeWeight(2);
-  drawBranch(baseLength, depth, branchAngle);
+  drawBranch(baseLength, depth, angle);
   pop();
 }
 
@@ -66,28 +57,41 @@ function drawBranch(len, depth, angle) {
     drawBranch(len * 0.68, depth - 1, angle);
     pop();
   } else {
-    fill(120, 255, 160);
+    fill(100, 255, 150);
     noStroke();
-    ellipse(0, 0, 6, 6);
+    circle(0, 0, 6);
     stroke(255);
   }
 }
 
-function showSoundInfo(level) {
+function startMic() {
+  userStartAudio();
+  getAudioContext().resume();
+
+  mic.start(function () {
+    micStarted = true;
+  });
+}
+
+function resetTree() {
+  growthLevel = 0;
+}
+
+function showInfo(level) {
   fill(255);
   noStroke();
   textAlign(LEFT);
   textSize(16);
 
   text("Mic Status: " + (micStarted ? "ON" : "OFF"), 20, 30);
-  text("Sound Level: " + nf(level, 1, 5), 20, 55);
-  text("Growth Level: " + nf(growthLevel, 1, 2), 20, 80);
+  text("Sound Level: " + level.toFixed(5), 20, 55);
+  text("Growth Level: " + growthLevel.toFixed(2), 20, 80);
 
-  let barWidth = map(growthLevel, 0, 1, 0, 250);
   fill(255);
-  rect(20, 100, 250, 12);
+  rect(20, 105, 250, 14);
+
   fill(100, 255, 150);
-  rect(20, 100, barWidth, 12);
+  rect(20, 105, growthLevel * 250, 14);
 }
 
 function backgroundGradient() {
@@ -99,27 +103,6 @@ function backgroundGradient() {
   }
 }
 
-function startMic() {
-  userStartAudio();
-
-  mic.start(
-    function () {
-      started = true;
-      micStarted = true;
-      console.log("Microphone started successfully");
-    },
-    function () {
-      started = true;
-      micStarted = false;
-      console.log("Microphone failed. Check browser permission.");
-    }
-  );
-}
-
-function resetTree() {
-  growthLevel = 0;
-  smoothedLevel = 0;
-}
 function testGrowth() {
   growthLevel = 1;
 }
