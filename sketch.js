@@ -161,7 +161,7 @@ function drawLeavesAndFruits(leafAmount) {
     stroke(90, 20, 20);
     strokeWeight(1.2);
     fill(230, 30, 30);
-    circle(0, -8, 8);
+    circle(0, -8, 6);
     noStroke();
   }
 
@@ -169,7 +169,7 @@ function drawLeavesAndFruits(leafAmount) {
     stroke(120, 70, 10);
     strokeWeight(1.2);
     fill(255, 170, 30);
-    circle(-6, 2, 8);
+    circle(-6, 2, 6);
     noStroke();
   }
 }
