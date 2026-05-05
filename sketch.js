@@ -8,6 +8,7 @@ function setup() {
   canvas.parent("canvas-container");
   angleMode(RADIANS);
   textFont("Arial");
+
   mic = new p5.AudioIn();
 }
 
@@ -15,7 +16,7 @@ function draw() {
   backgroundGradient();
 
   if (!started) {
-    showInstructions();
+    showStartScreen();
     return;
   }
 
@@ -36,55 +37,46 @@ function draw() {
   let depth = floor(map(growthLevel, 0, 1, 4, 11));
   let baseLength = map(growthLevel, 0, 1, 50, 135);
   let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
-  let leafAmount = growthLevel;
 
   drawGround();
 
   push();
   translate(width / 2, height - 100);
-  branch(baseLength, depth, branchAngle, leafAmount);
+  branch(baseLength, depth, branchAngle, growthLevel);
   pop();
 
   drawInfo(level, growthLevel, depth);
 }
 
-function showInstructions() {
+function startMic() {
+  userStartAudio();
+  getAudioContext().resume();
+
+  mic.start(function () {
+    started = true;
+  });
+}
+
+function resetTree() {
+  growthLevel = 0;
+  smoothedLevel = 0;
+}
+
+function showStartScreen() {
   fill(255, 245);
-  rect(170, 150, 560, 360, 25);
+  rect(170, 170, 560, 300, 25);
 
   fill(20);
   textAlign(CENTER);
   textSize(34);
-  text("Sound Reactive Fractal Tree", width / 2, 215);
+  text("Sound Reactive Fractal Tree", width / 2, 240);
 
   textSize(18);
-  text("Instructions", width / 2, 270);
-
-  textSize(16);
-  text("1. Click anywhere on the screen", width / 2, 315);
-  text("2. Allow microphone access", width / 2, 350);
-  text("3. Speak or clap near your laptop", width / 2, 385);
-  text("4. Tree grows branches, leaves, and fruits", width / 2, 420);
-
-  fill(40, 120, 60);
-  rect(350, 455, 200, 45, 15);
-
-  fill(255);
-  textSize(18);
-  text("Click to Start", width / 2, 485);
+  text("Click Start Microphone button above", width / 2, 300);
+  text("Allow microphone access", width / 2, 340);
+  text("Speak or clap to grow branches, leaves, and fruits", width / 2, 380);
 
   textAlign(LEFT);
-}
-
-function mousePressed() {
-  if (!started) {
-    userStartAudio();
-    getAudioContext().resume();
-
-    mic.start(function () {
-      started = true;
-    });
-  }
 }
 
 function branch(len, depth, angle, leafAmount) {
