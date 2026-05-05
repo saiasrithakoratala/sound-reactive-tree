@@ -113,7 +113,7 @@ function showStartScreen() {
 
 function branch(len, depth, angle, leafAmount) {
   strokeWeight(map(len, 4, 135, 0.7, 9));
-  stroke(95, 55, 25);
+  stroke(75, 45, 20, 180);
   line(0, 0, 0, -len);
 
   translate(0, -len);
@@ -153,20 +153,31 @@ function drawLeavesAndFruits(leafAmount) {
 
   noStroke();
 
-  let leafSize = map(leafAmount, 0.3, 1, 6, 10);
+  let leafSize = map(leafAmount, 0.3, 1, 8, 14);
 
-  // Leaves are spaced out, not drawn everywhere
-  if (random(1) < 0.4) {
-    fill(60, 180, 80, 220);
-    ellipse(0, 0, leafSize, leafSize * 0.7);
+  // Fuller leaves at high growth to cover outer branch tips
+  fill(60, 180, 80, 230);
+
+  ellipse(0, 0, leafSize, leafSize * 0.75);
+
+  if (leafAmount > 0.5) {
+    ellipse(-5, -3, leafSize * 0.9, leafSize * 0.65);
+    ellipse(5, -3, leafSize * 0.9, leafSize * 0.65);
   }
 
-  // Very few fruits
-  if (leafAmount > 0.7 && random(1) < 0.015) {
+  if (leafAmount > 0.75) {
+    ellipse(-3, 4, leafSize * 0.8, leafSize * 0.6);
+    ellipse(3, 4, leafSize * 0.8, leafSize * 0.6);
+  }
+
+  // Few small fruits
+  if (leafAmount > 0.75 && random(1) < 0.01) {
     fill(220, 40, 40);
-    circle(0, -5, 4);
+    circle(0, -6, 4);
   }
 }
+
+
 
 function drawGround() {
   noStroke();
