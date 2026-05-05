@@ -120,3 +120,6 @@ function resetTree() {
   growthLevel = 0;
   smoothedLevel = 0;
 }
+function testGrowth() {
+  growthLevel = 1;
+}
