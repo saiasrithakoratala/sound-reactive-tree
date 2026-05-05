@@ -1,7 +1,10 @@
 let mic;
 let smoothedLevel = 0;
 let growthLevel = 0;
+let targetGrowth = 0;
 let started = false;
+let testMode = false;
+let testTimer = 0;
 let statusMessage = "Click Start Microphone";
 
 function setup() {
@@ -22,19 +25,35 @@ function draw() {
 
   let level = 0;
 
-  if (started) {
+  if (started && !testMode) {
     level = mic.getLevel();
+    smoothedLevel = lerp(smoothedLevel, level, 0.12);
+
+    targetGrowth = map(smoothedLevel, 0.004, 0.03, 0, 1);
+    targetGrowth = constrain(targetGrowth, 0, 1);
   }
 
-  smoothedLevel = lerp(smoothedLevel, level, 0.12);
+  if (testMode) {
+    testTimer++;
 
-  let amplifiedSound = map(smoothedLevel, 0.012, 0.06, 0, 1);
-  amplifiedSound = constrain(amplifiedSound, 0, 1);
+    if (testTimer < 120) {
+      targetGrowth = 1;
+    } else {
+      targetGrowth = 0;
+    }
 
-  if (amplifiedSound > growthLevel) {
-    growthLevel = lerp(growthLevel, amplifiedSound, 0.18);
+    if (testTimer > 280) {
+      testMode = false;
+      started = false;
+      targetGrowth = 0;
+      statusMessage = "Test complete";
+    }
+  }
+
+  if (targetGrowth > growthLevel) {
+    growthLevel = lerp(growthLevel, targetGrowth, 0.08);
   } else {
-    growthLevel = lerp(growthLevel, amplifiedSound, 0.035);
+    growthLevel = lerp(growthLevel, targetGrowth, 0.025);
   }
 
   growthLevel = constrain(growthLevel, 0, 1);
@@ -52,7 +71,7 @@ function draw() {
 
   drawInfo(level, growthLevel, depth);
 
-  if (!started) {
+  if (!started && !testMode && growthLevel < 0.02) {
     showStartScreen();
   }
 }
@@ -61,29 +80,38 @@ function startMic() {
   userStartAudio();
   getAudioContext().resume();
 
+  testMode = false;
+  started = true;
+  statusMessage = "Microphone starting...";
+
   mic.start(
     function () {
       started = true;
-      statusMessage = "Microphone ON";
+      statusMessage = "Microphone ON - speak or clap";
     },
     function () {
       started = false;
-      statusMessage = "Microphone blocked. Use Test Growth.";
+      statusMessage = "Microphone failed - check browser permission";
     }
   );
 }
 
 function testGrowth() {
   started = true;
-  growthLevel = 1;
-  smoothedLevel = 0.06;
-  statusMessage = "Test Growth ON";
+  testMode = true;
+  testTimer = 0;
+  targetGrowth = 0;
+  growthLevel = 0;
+  statusMessage = "Test Growth: smooth grow and decay";
 }
 
 function resetTree() {
   growthLevel = 0;
+  targetGrowth = 0;
   smoothedLevel = 0;
-  statusMessage = started ? "Microphone ON" : "Click Start Microphone";
+  testMode = false;
+  started = false;
+  statusMessage = "Click Start Microphone";
 }
 
 function showStartScreen() {
@@ -97,8 +125,8 @@ function showStartScreen() {
 
   textSize(18);
   text(statusMessage, width / 2, 300);
-  text("Click Test Growth to check animation", width / 2, 340);
-  text("Click Start Microphone to use sound", width / 2, 380);
+  text("Click Start Microphone to use sound", width / 2, 340);
+  text("Click Test Growth to preview animation", width / 2, 380);
 
   textAlign(LEFT);
 }
@@ -173,8 +201,6 @@ function drawLeavesAndFruits(leafAmount) {
     fill(255, 220, 70);
     circle(5, 2, 4);
   }
-
-  stroke(95, 55, 25);
 }
 
 function drawGround() {
