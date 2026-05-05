@@ -8,7 +8,6 @@ function setup() {
   canvas.parent("canvas-container");
   angleMode(RADIANS);
   textFont("Arial");
-
   mic = new p5.AudioIn();
 }
 
@@ -35,9 +34,9 @@ function draw() {
   growthLevel = constrain(growthLevel, 0, 1);
 
   let depth = floor(map(growthLevel, 0, 1, 4, 11));
-  let baseLength = map(growthLevel, 0, 1, 45, 130);
+  let baseLength = map(growthLevel, 0, 1, 50, 135);
   let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
-  let leafAmount = map(growthLevel, 0, 1, 0, 1);
+  let leafAmount = growthLevel;
 
   drawGround();
 
@@ -65,7 +64,7 @@ function showInstructions() {
   text("1. Click anywhere on the screen", width / 2, 315);
   text("2. Allow microphone access", width / 2, 350);
   text("3. Speak or clap near your laptop", width / 2, 385);
-  text("4. Tree grows more branches, leaves, and fruits", width / 2, 420);
+  text("4. Tree grows branches, leaves, and fruits", width / 2, 420);
 
   fill(40, 120, 60);
   rect(350, 455, 200, 45, 15);
@@ -89,7 +88,7 @@ function mousePressed() {
 }
 
 function branch(len, depth, angle, leafAmount) {
-  strokeWeight(map(len, 4, 130, 0.7, 10));
+  strokeWeight(map(len, 4, 135, 0.7, 9));
   stroke(95, 55, 25);
   line(0, 0, 0, -len);
 
@@ -113,59 +112,46 @@ function branch(len, depth, angle, leafAmount) {
   if (growthLevel > 0.35) {
     push();
     rotate(-angle * 0.35);
-    branch(len * 0.62, depth - 1, angle * 0.85, leafAmount);
+    branch(len * 0.58, depth - 1, angle * 0.85, leafAmount);
     pop();
   }
 
-  if (growthLevel > 0.55) {
+  if (growthLevel > 0.6) {
     push();
     rotate(angle * 0.35);
-    branch(len * 0.60, depth - 1, angle * 0.8, leafAmount);
-    pop();
-  }
-
-  if (growthLevel > 0.75) {
-    push();
-    rotate(0);
-    branch(len * 0.55, depth - 1, angle * 0.7, leafAmount);
+    branch(len * 0.56, depth - 1, angle * 0.8, leafAmount);
     pop();
   }
 }
 
 function drawLeavesAndFruits(leafAmount) {
-  if (leafAmount < 0.18) return;
+  if (leafAmount < 0.2) return;
 
   noStroke();
 
-  leafAmount = pow(leafAmount, 0.7);
+  let leafSize = map(leafAmount, 0.2, 1, 7, 15);
 
-  let leafSize = map(leafAmount, 0.18, 1, 16, 36);
-  let fruitSize = 4;
+  fill(55, 180, 75, 210);
+  ellipse(-5, -3, leafSize, leafSize * 0.75);
+  ellipse(5, -3, leafSize, leafSize * 0.75);
+  ellipse(0, 3, leafSize, leafSize * 0.75);
 
-  // Bigger leaf cluster
-  fill(45, 190, 75, 230);
-  ellipse(-12, -5, leafSize, leafSize * 0.75);
-  ellipse(12, -5, leafSize, leafSize * 0.75);
-  ellipse(0, 0, leafSize, leafSize * 0.8);
-  ellipse(-8, 9, leafSize, leafSize * 0.75);
-  ellipse(8, 9, leafSize, leafSize * 0.75);
-
-  // Small fruits placed around leaves, not on center
   if (leafAmount > 0.55) {
     fill(230, 45, 45);
-    circle(0, -14, fruitSize);
+    circle(0, -7, 4);
   }
 
-  if (leafAmount > 0.7) {
+  if (leafAmount > 0.72) {
     fill(255, 160, 40);
-    circle(-14, 2, fruitSize);
+    circle(-5, 2, 4);
   }
 
-  if (leafAmount > 0.85) {
+  if (leafAmount > 0.88) {
     fill(255, 220, 70);
-    circle(14, 2, fruitSize);
+    circle(5, 2, 4);
   }
 }
+
 function drawGround() {
   noStroke();
   fill(35, 100, 35);
