@@ -1,5 +1,6 @@
 let mic;
 let growthLevel = 0;
+let targetGrowth = 0;
 let micStarted = false;
 
 function setup() {
@@ -18,18 +19,19 @@ function draw() {
     level = mic.getLevel();
   }
 
-  let amplified = map(level, 0.012, 0.06, 0, 1);
-  amplified = constrain(amplified, 0, 1);
+  targetGrowth = map(level, 0.012, 0.06, 0, 1);
+  targetGrowth = constrain(targetGrowth, 0, 1);
 
-  if (amplified > growthLevel) {
-    growthLevel = amplified;
+  if (targetGrowth > growthLevel) {
+    growthLevel = lerp(growthLevel, targetGrowth, 0.15);
+  } else {
+    growthLevel = lerp(growthLevel, targetGrowth, 0.035);
   }
 
-  growthLevel *= 0.96;
   growthLevel = constrain(growthLevel, 0, 1);
 
-  let depth = floor(map(growthLevel, 0, 1, 3, 11));
-  let baseLength = map(growthLevel, 0, 1, 70, 180);
+  let depth = floor(map(growthLevel, 0, 1, 3, 12));
+  let baseLength = map(growthLevel, 0, 1, 70, 190);
   let angle = map(growthLevel, 0, 1, PI / 12, PI / 3);
 
   showInfo(level);
@@ -57,11 +59,33 @@ function drawBranch(len, depth, angle) {
     drawBranch(len * 0.68, depth - 1, angle);
     pop();
   } else {
-    fill(100, 255, 150);
-    noStroke();
-    circle(0, 0, 6);
-    stroke(255);
+    drawLeafAndFruit();
   }
+}
+
+function drawLeafAndFruit() {
+  let leafSize = map(growthLevel, 0, 1, 5, 11);
+
+  fill(100, 255, 150);
+  noStroke();
+  ellipse(0, 0, leafSize, leafSize * 0.8);
+
+  if (growthLevel > 0.45) {
+    fill(255, 210, 80);
+    circle(4, -4, map(growthLevel, 0.45, 1, 3, 7));
+  }
+
+  if (growthLevel > 0.65) {
+    fill(255, 90, 80);
+    circle(-4, 3, map(growthLevel, 0.65, 1, 3, 8));
+  }
+
+  if (growthLevel > 0.8) {
+    fill(255, 140, 40);
+    circle(2, 5, map(growthLevel, 0.8, 1, 3, 7));
+  }
+
+  stroke(255);
 }
 
 function startMic() {
@@ -75,10 +99,12 @@ function startMic() {
 
 function resetTree() {
   growthLevel = 0;
+  targetGrowth = 0;
 }
 
 function testGrowth() {
   growthLevel = 1;
+  targetGrowth = 1;
 }
 
 function showInfo(level) {
@@ -91,9 +117,11 @@ function showInfo(level) {
   text("Sound Level: " + level.toFixed(5), 20, 55);
   text("Growth Level: " + growthLevel.toFixed(2), 20, 80);
 
-  fill(255);
+  noFill();
+  stroke(255);
   rect(20, 105, 250, 14);
 
+  noStroke();
   fill(100, 255, 150);
   rect(20, 105, growthLevel * 250, 14);
 }
