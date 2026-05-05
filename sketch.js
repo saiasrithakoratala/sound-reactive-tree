@@ -5,6 +5,8 @@ let targetGrowth = 0;
 let started = false;
 let statusMessage = "Click Start Microphone";
 
+let leafCounter = 0;
+
 function setup() {
   let canvas = createCanvas(900, 700);
   canvas.parent("canvas-container");
@@ -37,7 +39,7 @@ function draw() {
     targetGrowth = constrain(targetGrowth, 0, 1);
   }
 
-  // Smooth growth and smooth faster decay
+  // smooth growth + faster decay
   if (targetGrowth > growthLevel) {
     growthLevel = lerp(growthLevel, targetGrowth, 0.10);
   } else {
@@ -51,6 +53,9 @@ function draw() {
   let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
 
   drawGround();
+
+  // reset fruit placement counter each frame
+  leafCounter = 0;
 
   push();
   translate(width / 2, height - 100);
@@ -94,29 +99,13 @@ function resetTree() {
   statusMessage = "Click Start Microphone";
 }
 
-function showStartScreen() {
-  fill(255, 245);
-  rect(170, 170, 560, 260, 25);
-
-  fill(20);
-  textAlign(CENTER);
-  textSize(32);
-  text("Sound Reactive Fractal Tree", width / 2, 240);
-
-  textSize(18);
-  text(statusMessage, width / 2, 300);
-  text("Click Start Microphone to use sound", width / 2, 340);
-  text("Click Test Growth to preview animation", width / 2, 380);
-
-  textAlign(LEFT);
-}
-
 function branch(len, depth, angle, leafAmount) {
+  // hide tiny outer branches when tree is dense
   if (!(growthLevel > 0.6 && len < 20)) {
-  strokeWeight(map(len, 4, 135, 0.7, 9));
-  stroke(75, 45, 20, 180);
-  line(0, 0, 0, -len);
-}
+    strokeWeight(map(len, 4, 135, 0.7, 9));
+    stroke(75, 45, 20, 180);
+    line(0, 0, 0, -len);
+  }
 
   translate(0, -len);
 
@@ -153,6 +142,8 @@ function branch(len, depth, angle, leafAmount) {
 function drawLeavesAndFruits(leafAmount) {
   if (leafAmount < 0.3) return;
 
+  leafCounter++;
+
   noStroke();
 
   let leafSize = map(leafAmount, 0.3, 1, 8, 14);
@@ -171,20 +162,20 @@ function drawLeavesAndFruits(leafAmount) {
     ellipse(3, 4, leafSize * 0.8, leafSize * 0.6);
   }
 
-  // clear fruits with outline
-  if (leafAmount > 0.65 && random(1) < 0.02) {
-    stroke(120, 20, 20);
-    strokeWeight(1);
-    fill(230, 40, 40);
-    circle(0, -8, 6);
+  // fruits: controlled, visible, not too many
+  if (leafAmount > 0.65 && leafCounter % 6 === 0) {
+    stroke(90, 20, 20);
+    strokeWeight(1.2);
+    fill(230, 30, 30);
+    circle(0, -8, 8);
     noStroke();
   }
 
-  if (leafAmount > 0.85 && random(1) < 0.015) {
-    stroke(140, 80, 10);
-    strokeWeight(1);
-    fill(255, 170, 40);
-    circle(-6, 1, 6);
+  if (leafAmount > 0.85 && leafCounter % 10 === 0) {
+    stroke(120, 70, 10);
+    strokeWeight(1.2);
+    fill(255, 170, 30);
+    circle(-6, 2, 8);
     noStroke();
   }
 }
@@ -208,6 +199,22 @@ function backgroundGradient() {
     stroke(c);
     line(0, y, width, y);
   }
+}
+
+function showStartScreen() {
+  fill(255, 245);
+  rect(170, 170, 560, 260, 25);
+
+  fill(20);
+  textAlign(CENTER);
+  textSize(32);
+  text("Sound Reactive Fractal Tree", width / 2, 240);
+
+  textSize(18);
+  text(statusMessage, width / 2, 300);
+  text("Click Start Microphone to use sound", width / 2, 340);
+
+  textAlign(LEFT);
 }
 
 function drawInfo(rawLevel, growthLevel, depth) {
