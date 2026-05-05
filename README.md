@@ -6,10 +6,10 @@ Speak or clap to make branches, leaves, and fruits appear, then watch it smoothl
 Open index.html in your browser
 OR open your GitHub Pages link
 ## How to Use
-Click Start Microphone
-Allow microphone permission
-Speak or clap
-The tree will grow with sound
+Click Start Microphone  
+Allow microphone permission  
+Speak or clap  
+The tree will grow with sound  
 Click Reset to restart
 ## Technologies Used
 HTML
