@@ -29,7 +29,6 @@ function draw() {
     level = mic.getLevel();
     smoothedLevel = lerp(smoothedLevel, level, 0.12);
 
-    // Ignore background noise
     if (smoothedLevel < 0.012) {
       targetGrowth = 0;
     } else {
@@ -39,7 +38,6 @@ function draw() {
     targetGrowth = constrain(targetGrowth, 0, 1);
   }
 
-  // smooth growth + faster decay
   if (targetGrowth > growthLevel) {
     growthLevel = lerp(growthLevel, targetGrowth, 0.10);
   } else {
@@ -54,7 +52,6 @@ function draw() {
 
   drawGround();
 
-  // reset fruit placement counter each frame
   leafCounter = 0;
 
   push();
@@ -100,7 +97,6 @@ function resetTree() {
 }
 
 function branch(len, depth, angle, leafAmount) {
-  // hide tiny outer branches when tree is dense
   if (!(growthLevel > 0.6 && len < 20)) {
     strokeWeight(map(len, 4, 135, 0.7, 9));
     stroke(75, 45, 20, 180);
@@ -148,7 +144,6 @@ function drawLeavesAndFruits(leafAmount) {
 
   let leafSize = map(leafAmount, 0.3, 1, 8, 14);
 
-  // leaves
   fill(60, 180, 80, 230);
   ellipse(0, 0, leafSize, leafSize * 0.75);
 
@@ -162,8 +157,7 @@ function drawLeavesAndFruits(leafAmount) {
     ellipse(3, 4, leafSize * 0.8, leafSize * 0.6);
   }
 
-  // fruits: controlled, visible, not too many
-  if (leafAmount > 0.65 && leafCounter % 6 === 0) {
+  if (leafAmount > 0.65 && leafCounter % 4 === 0) {
     stroke(90, 20, 20);
     strokeWeight(1.2);
     fill(230, 30, 30);
@@ -171,7 +165,7 @@ function drawLeavesAndFruits(leafAmount) {
     noStroke();
   }
 
-  if (leafAmount > 0.85 && leafCounter % 10 === 0) {
+  if (leafAmount > 0.85 && leafCounter % 6 === 0) {
     stroke(120, 70, 10);
     strokeWeight(1.2);
     fill(255, 170, 30);
