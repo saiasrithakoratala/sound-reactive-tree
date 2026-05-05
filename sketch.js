@@ -8,16 +8,20 @@ let statusMessage = "Click Start Microphone";
 let leafCounter = 0;
 
 function setup() {
-  let canvas = createCanvas(900, 700);
-  canvas.parent("canvas-container");
+  let canvas = createCanvas(900, 600);
+
+  let container = document.getElementById("canvas-container");
+  if (container) {
+    canvas.parent(container);
+  }
+
   angleMode(RADIANS);
   textFont("Arial");
 
   mic = new p5.AudioIn();
 
-  document.getElementById("startBtn").addEventListener("click", startMic);
-  document.getElementById("testBtn").addEventListener("click", testGrowth);
-  document.getElementById("resetBtn").addEventListener("click", resetTree);
+  document.getElementById("startBtn")?.addEventListener("click", startMic);
+  document.getElementById("resetBtn")?.addEventListener("click", resetTree);
 }
 
 function draw() {
@@ -47,7 +51,7 @@ function draw() {
   growthLevel = constrain(growthLevel, 0, 1);
 
   let depth = floor(map(growthLevel, 0, 1, 4, 7));
-  let baseLength = map(growthLevel, 0, 1, 50, 135);
+  let baseLength = map(growthLevel, 0, 1, 50, 130);
   let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
 
   drawGround();
@@ -55,7 +59,7 @@ function draw() {
   leafCounter = 0;
 
   push();
-  translate(width / 2, height - 100);
+  translate(width / 2, height - 90);
   branch(baseLength, depth, branchAngle, growthLevel);
   pop();
 
@@ -82,12 +86,6 @@ function startMic() {
   );
 }
 
-function testGrowth() {
-  started = true;
-  targetGrowth = 1;
-  statusMessage = "Test Growth";
-}
-
 function resetTree() {
   growthLevel = 0;
   targetGrowth = 0;
@@ -98,7 +96,7 @@ function resetTree() {
 
 function branch(len, depth, angle, leafAmount) {
   if (!(growthLevel > 0.6 && len < 20)) {
-    strokeWeight(map(len, 4, 135, 0.7, 9));
+    strokeWeight(map(len, 4, 130, 0.7, 9));
     stroke(75, 45, 20, 180);
     line(0, 0, 0, -len);
   }
@@ -161,7 +159,7 @@ function drawLeavesAndFruits(leafAmount) {
     stroke(90, 20, 20);
     strokeWeight(1.2);
     fill(230, 30, 30);
-    circle(0, -8, 5);
+    circle(0, -8, 6);
     noStroke();
   }
 
@@ -169,7 +167,7 @@ function drawLeavesAndFruits(leafAmount) {
     stroke(120, 70, 10);
     strokeWeight(1.2);
     fill(255, 170, 30);
-    circle(-6, 2, 5);
+    circle(-6, 2, 6);
     noStroke();
   }
 }
@@ -177,10 +175,10 @@ function drawLeavesAndFruits(leafAmount) {
 function drawGround() {
   noStroke();
   fill(35, 100, 35);
-  rect(0, height - 100, width, 100);
+  rect(0, height - 90, width, 90);
 
   fill(25, 80, 25);
-  rect(0, height - 70, width, 70);
+  rect(0, height - 60, width, 60);
 }
 
 function backgroundGradient() {
@@ -197,16 +195,16 @@ function backgroundGradient() {
 
 function showStartScreen() {
   fill(255, 245);
-  rect(170, 170, 560, 260, 25);
+  rect(190, 180, 520, 220, 25);
 
   fill(20);
   textAlign(CENTER);
-  textSize(32);
-  text("Sound Reactive Fractal Tree", width / 2, 240);
+  textSize(30);
+  text("Sound Reactive Fractal Tree", width / 2, 245);
 
   textSize(18);
-  text(statusMessage, width / 2, 300);
-  text("Click Start Microphone to use sound", width / 2, 340);
+  text(statusMessage, width / 2, 305);
+  text("Click Start Microphone to use sound", width / 2, 345);
 
   textAlign(LEFT);
 }
