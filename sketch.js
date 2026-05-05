@@ -138,31 +138,34 @@ function drawLeavesAndFruits(leafAmount) {
   noStroke();
 
   leafAmount = pow(leafAmount, 0.7);
-  let leafSize = map(leafAmount, 0.18, 1, 12, 30);
 
-  fill(60, 180, 80, 220);
-  ellipse(-8, -4, leafSize, leafSize * 0.8);
-  ellipse(8, -4, leafSize, leafSize * 0.8);
+  let leafSize = map(leafAmount, 0.18, 1, 16, 36);
+  let fruitSize = 4;
+
+  // Bigger leaf cluster
+  fill(45, 190, 75, 230);
+  ellipse(-12, -5, leafSize, leafSize * 0.75);
+  ellipse(12, -5, leafSize, leafSize * 0.75);
   ellipse(0, 0, leafSize, leafSize * 0.8);
-  ellipse(-5, 7, leafSize, leafSize * 0.8);
-  ellipse(6, 6, leafSize, leafSize * 0.8);
+  ellipse(-8, 9, leafSize, leafSize * 0.75);
+  ellipse(8, 9, leafSize, leafSize * 0.75);
 
+  // Small fruits placed around leaves, not on center
   if (leafAmount > 0.55) {
     fill(230, 45, 45);
-    circle(0, -7, 5);
+    circle(0, -14, fruitSize);
   }
 
   if (leafAmount > 0.7) {
     fill(255, 160, 40);
-    circle(-6, -3, 5);
+    circle(-14, 2, fruitSize);
   }
 
   if (leafAmount > 0.85) {
     fill(255, 220, 70);
-    circle(6, -3, 5);
+    circle(14, 2, fruitSize);
   }
 }
-
 function drawGround() {
   noStroke();
   fill(35, 100, 35);
