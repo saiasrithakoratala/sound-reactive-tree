@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sound Reactive Tree</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="header">
+    <h1>🌳 Sound Reactive Tree</h1>
+    <p>Make sound → Watch the tree grow</p>
+  </div>
+
+  <div class="controls">
+    <button onclick="startMic()">Start Microphone</button>
+    <button onclick="resetTree()">Reset</button>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div class="instructions">
+    <h3>Instructions</h3>
+    <p>1. Click "Start Microphone"</p>
+    <p>2. Allow mic access</p>
+    <p>3. Clap / speak / play music</p>
+    <p>4. Tree grows with sound 🌿</p>
+  </div>
+
+  <!-- p5.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+
+  <script src="sketch.js"></script>
+</body>
+</html>

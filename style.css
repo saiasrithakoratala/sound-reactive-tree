@@ -1,0 +1,41 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+  color: white;
+  text-align: center;
+}
+
+.header {
+  padding: 20px;
+}
+
+.controls {
+  margin: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+#canvas-container {
+  display: flex;
+  justify-content: center;
+}
+
+.instructions {
+  margin-top: 20px;
+  font-size: 14px;
+  opacity: 0.9;
+}
