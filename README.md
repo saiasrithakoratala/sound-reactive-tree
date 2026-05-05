@@ -12,12 +12,12 @@ Speak or clap
 The tree will grow with sound  
 Click Reset to restart
 ## Technologies Used
-HTML
-CSS
-JavaScript
-p5.js
-p5.sound
+HTML  
+CSS  
+JavaScript  
+p5.js  
+p5.sound  
 ## Note
-Microphone must be allowed in browser
-Close apps like Zoom/Teams if mic is not working
-Works best in Chrome
+Microphone must be allowed in browser  
+Close apps like Zoom/Teams if mic is not working  
+Works best in Chrome  
