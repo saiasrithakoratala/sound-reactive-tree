@@ -2,6 +2,7 @@ let mic;
 let smoothedLevel = 0;
 let growthLevel = 0;
 let started = false;
+let statusMessage = "Click Start Microphone";
 
 function setup() {
   let canvas = createCanvas(900, 700);
@@ -10,17 +11,21 @@ function setup() {
   textFont("Arial");
 
   mic = new p5.AudioIn();
+
+  document.getElementById("startBtn").addEventListener("click", startMic);
+  document.getElementById("testBtn").addEventListener("click", testGrowth);
+  document.getElementById("resetBtn").addEventListener("click", resetTree);
 }
 
 function draw() {
   backgroundGradient();
 
-  if (!started) {
-    showStartScreen();
-    return;
+  let level = 0;
+
+  if (started) {
+    level = mic.getLevel();
   }
 
-  let level = mic.getLevel();
   smoothedLevel = lerp(smoothedLevel, level, 0.12);
 
   let amplifiedSound = map(smoothedLevel, 0.012, 0.06, 0, 1);
@@ -46,35 +51,54 @@ function draw() {
   pop();
 
   drawInfo(level, growthLevel, depth);
+
+  if (!started) {
+    showStartScreen();
+  }
 }
 
 function startMic() {
   userStartAudio();
   getAudioContext().resume();
 
-  mic.start(function () {
-    started = true;
-  });
+  mic.start(
+    function () {
+      started = true;
+      statusMessage = "Microphone ON";
+    },
+    function () {
+      started = false;
+      statusMessage = "Microphone blocked. Use Test Growth.";
+    }
+  );
+}
+
+function testGrowth() {
+  started = true;
+  growthLevel = 1;
+  smoothedLevel = 0.06;
+  statusMessage = "Test Growth ON";
 }
 
 function resetTree() {
   growthLevel = 0;
   smoothedLevel = 0;
+  statusMessage = started ? "Microphone ON" : "Click Start Microphone";
 }
 
 function showStartScreen() {
   fill(255, 245);
-  rect(170, 170, 560, 300, 25);
+  rect(170, 170, 560, 260, 25);
 
   fill(20);
   textAlign(CENTER);
-  textSize(34);
+  textSize(32);
   text("Sound Reactive Fractal Tree", width / 2, 240);
 
   textSize(18);
-  text("Click Start Microphone button above", width / 2, 300);
-  text("Allow microphone access", width / 2, 340);
-  text("Speak or clap to grow branches, leaves, and fruits", width / 2, 380);
+  text(statusMessage, width / 2, 300);
+  text("Click Test Growth to check animation", width / 2, 340);
+  text("Click Start Microphone to use sound", width / 2, 380);
 
   textAlign(LEFT);
 }
@@ -114,6 +138,13 @@ function branch(len, depth, angle, leafAmount) {
     branch(len * 0.56, depth - 1, angle * 0.8, leafAmount);
     pop();
   }
+
+  if (growthLevel > 0.8) {
+    push();
+    rotate(0);
+    branch(len * 0.52, depth - 1, angle * 0.7, leafAmount);
+    pop();
+  }
 }
 
 function drawLeavesAndFruits(leafAmount) {
@@ -142,6 +173,8 @@ function drawLeavesAndFruits(leafAmount) {
     fill(255, 220, 70);
     circle(5, 2, 4);
   }
+
+  stroke(95, 55, 25);
 }
 
 function drawGround() {
@@ -168,21 +201,21 @@ function backgroundGradient() {
 function drawInfo(rawLevel, growthLevel, depth) {
   noStroke();
   fill(255, 240);
-  rect(20, 20, 380, 145, 15);
+  rect(20, 20, 390, 150, 15);
 
   fill(20);
   textSize(22);
   text("Sound Reactive Fractal Tree", 35, 55);
 
   textSize(15);
-  text("Speak loudly or clap to grow branches and fruits", 35, 82);
+  text(statusMessage, 35, 82);
   text("Mic level: " + nf(rawLevel, 1, 4), 35, 108);
   text("Growth: " + nf(growthLevel, 1, 3), 35, 130);
   text("Depth: " + depth, 190, 130);
 
   fill(220);
-  rect(35, 142, 300, 12, 6);
+  rect(35, 145, 300, 12, 6);
 
   fill(70, 180, 90);
-  rect(35, 142, growthLevel * 300, 12, 6);
+  rect(35, 145, growthLevel * 300, 12, 6);
 }
