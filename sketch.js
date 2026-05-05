@@ -1,135 +1,207 @@
 let mic;
+let smoothedLevel = 0;
 let growthLevel = 0;
-let targetGrowth = 0;
-let micStarted = false;
+let started = false;
 
 function setup() {
-  let canvas = createCanvas(900, 600);
+  let canvas = createCanvas(900, 700);
   canvas.parent("canvas-container");
   angleMode(RADIANS);
+  textFont("Arial");
+
   mic = new p5.AudioIn();
 }
 
 function draw() {
   backgroundGradient();
 
-  let level = 0;
-
-  if (micStarted) {
-    level = mic.getLevel();
+  if (!started) {
+    showInstructions();
+    return;
   }
 
-  targetGrowth = map(level, 0.012, 0.06, 0, 1);
-  targetGrowth = constrain(targetGrowth, 0, 1);
+  let level = mic.getLevel();
+  smoothedLevel = lerp(smoothedLevel, level, 0.12);
 
-  if (targetGrowth > growthLevel) {
-    growthLevel = lerp(growthLevel, targetGrowth, 0.18);
+  let amplifiedSound = map(smoothedLevel, 0.012, 0.06, 0, 1);
+  amplifiedSound = constrain(amplifiedSound, 0, 1);
+
+  if (amplifiedSound > growthLevel) {
+    growthLevel = lerp(growthLevel, amplifiedSound, 0.18);
   } else {
-    growthLevel = lerp(growthLevel, targetGrowth, 0.03);
+    growthLevel = lerp(growthLevel, amplifiedSound, 0.035);
   }
 
-  let depth = floor(map(growthLevel, 0, 1, 3, 12));
-  let baseLength = map(growthLevel, 0, 1, 70, 190);
-  let angle = map(growthLevel, 0, 1, PI / 12, PI / 3);
+  growthLevel = constrain(growthLevel, 0, 1);
 
-  showInfo(level);
+  let depth = floor(map(growthLevel, 0, 1, 4, 11));
+  let baseLength = map(growthLevel, 0, 1, 45, 130);
+  let branchAngle = map(growthLevel, 0, 1, PI / 12, PI / 3);
+  let leafAmount = map(growthLevel, 0, 1, 0, 1);
+
+  drawGround();
 
   push();
-  translate(width / 2, height);
-  stroke(255);
-  strokeWeight(2);
-  drawBranch(baseLength, depth, angle);
+  translate(width / 2, height - 100);
+  branch(baseLength, depth, branchAngle, leafAmount);
   pop();
+
+  drawInfo(level, growthLevel, depth);
 }
 
-function drawBranch(len, depth, angle) {
+function showInstructions() {
+  fill(255, 245);
+  rect(170, 150, 560, 360, 25);
+
+  fill(20);
+  textAlign(CENTER);
+  textSize(34);
+  text("Sound Reactive Fractal Tree", width / 2, 215);
+
+  textSize(18);
+  text("Instructions", width / 2, 270);
+
+  textSize(16);
+  text("1. Click anywhere on the screen", width / 2, 315);
+  text("2. Allow microphone access", width / 2, 350);
+  text("3. Speak or clap near your laptop", width / 2, 385);
+  text("4. Tree grows more branches, leaves, and fruits", width / 2, 420);
+
+  fill(40, 120, 60);
+  rect(350, 455, 200, 45, 15);
+
+  fill(255);
+  textSize(18);
+  text("Click to Start", width / 2, 485);
+
+  textAlign(LEFT);
+}
+
+function mousePressed() {
+  if (!started) {
+    userStartAudio();
+    getAudioContext().resume();
+
+    mic.start(function () {
+      started = true;
+    });
+  }
+}
+
+function branch(len, depth, angle, leafAmount) {
+  strokeWeight(map(len, 4, 130, 0.7, 10));
+  stroke(95, 55, 25);
   line(0, 0, 0, -len);
+
   translate(0, -len);
 
-  if (depth > 0) {
+  if (depth <= 0 || len < 7) {
+    drawLeavesAndFruits(leafAmount);
+    return;
+  }
+
+  push();
+  rotate(-angle);
+  branch(len * 0.72, depth - 1, angle, leafAmount);
+  pop();
+
+  push();
+  rotate(angle);
+  branch(len * 0.72, depth - 1, angle, leafAmount);
+  pop();
+
+  if (growthLevel > 0.35) {
     push();
-    rotate(angle);
-    drawBranch(len * 0.68, depth - 1, angle);
+    rotate(-angle * 0.35);
+    branch(len * 0.62, depth - 1, angle * 0.85, leafAmount);
     pop();
+  }
 
+  if (growthLevel > 0.55) {
     push();
-    rotate(-angle);
-    drawBranch(len * 0.68, depth - 1, angle);
+    rotate(angle * 0.35);
+    branch(len * 0.60, depth - 1, angle * 0.8, leafAmount);
     pop();
-  } else {
-    drawLeafAndFruit();
+  }
+
+  if (growthLevel > 0.75) {
+    push();
+    rotate(0);
+    branch(len * 0.55, depth - 1, angle * 0.7, leafAmount);
+    pop();
   }
 }
 
-function drawLeafAndFruit() {
+function drawLeavesAndFruits(leafAmount) {
+  if (leafAmount < 0.18) return;
+
   noStroke();
 
-  // Leaves
-  fill(90, 255, 130);
-  ellipse(0, 0, 10, 7);
+  leafAmount = pow(leafAmount, 0.7);
+  let leafSize = map(leafAmount, 0.18, 1, 12, 30);
 
-  // Fruits appear earlier and bigger
-  if (growthLevel > 0.25) {
-    fill(255, 70, 70);
-    circle(5, -4, 9);
+  fill(60, 180, 80, 220);
+  ellipse(-8, -4, leafSize, leafSize * 0.8);
+  ellipse(8, -4, leafSize, leafSize * 0.8);
+  ellipse(0, 0, leafSize, leafSize * 0.8);
+  ellipse(-5, 7, leafSize, leafSize * 0.8);
+  ellipse(6, 6, leafSize, leafSize * 0.8);
+
+  if (leafAmount > 0.55) {
+    fill(230, 45, 45);
+    circle(0, -7, 5);
   }
 
-  if (growthLevel > 0.45) {
-    fill(255, 190, 50);
-    circle(-5, 4, 9);
+  if (leafAmount > 0.7) {
+    fill(255, 160, 40);
+    circle(-6, -3, 5);
   }
 
-  if (growthLevel > 0.65) {
-    fill(255, 120, 30);
-    circle(0, 7, 10);
+  if (leafAmount > 0.85) {
+    fill(255, 220, 70);
+    circle(6, -3, 5);
   }
-
-  stroke(255);
 }
 
-function startMic() {
-  userStartAudio();
-  getAudioContext().resume();
-
-  mic.start(function () {
-    micStarted = true;
-  });
-}
-
-function resetTree() {
-  growthLevel = 0;
-  targetGrowth = 0;
-}
-
-function testGrowth() {
-  growthLevel = 1;
-  targetGrowth = 1;
-}
-
-function showInfo(level) {
-  fill(255);
+function drawGround() {
   noStroke();
-  textAlign(LEFT);
-  textSize(16);
+  fill(35, 100, 35);
+  rect(0, height - 100, width, 100);
 
-  text("Mic Status: " + (micStarted ? "ON" : "OFF"), 20, 30);
-  text("Sound Level: " + level.toFixed(5), 20, 55);
-  text("Growth Level: " + growthLevel.toFixed(2), 20, 80);
-
-  noFill();
-  stroke(255);
-  rect(20, 105, 250, 14);
-
-  noStroke();
-  fill(100, 255, 150);
-  rect(20, 105, growthLevel * 250, 14);
+  fill(25, 80, 25);
+  rect(0, height - 70, width, 70);
 }
 
 function backgroundGradient() {
-  for (let i = 0; i < height; i++) {
-    let inter = map(i, 0, height, 0, 1);
-    let c = lerpColor(color("#0f2027"), color("#2c5364"), inter);
+  let topColor = color(70, 110, 170);
+  let bottomColor = color(180, 220, 255);
+
+  for (let y = 0; y < height; y++) {
+    let inter = map(y, 0, height, 0, 1);
+    let c = lerpColor(topColor, bottomColor, inter);
     stroke(c);
-    line(0, i, width, i);
+    line(0, y, width, y);
   }
+}
+
+function drawInfo(rawLevel, growthLevel, depth) {
+  noStroke();
+  fill(255, 240);
+  rect(20, 20, 380, 145, 15);
+
+  fill(20);
+  textSize(22);
+  text("Sound Reactive Fractal Tree", 35, 55);
+
+  textSize(15);
+  text("Speak loudly or clap to grow branches and fruits", 35, 82);
+  text("Mic level: " + nf(rawLevel, 1, 4), 35, 108);
+  text("Growth: " + nf(growthLevel, 1, 3), 35, 130);
+  text("Depth: " + depth, 190, 130);
+
+  fill(220);
+  rect(35, 142, 300, 12, 6);
+
+  fill(70, 180, 90);
+  rect(35, 142, growthLevel * 300, 12, 6);
 }
