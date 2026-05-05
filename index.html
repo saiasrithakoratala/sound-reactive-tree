@@ -1,33 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sound Reactive Tree</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <header>
-    <h1>🌳 Sound Reactive Tree</h1>
-    <p>Clap, speak, or play music and watch the tree grow.</p>
-  </header>
+  <h1>🌳 Sound Reactive Tree</h1>
+  <p>Click Start, allow mic, then clap or speak.</p>
 
-  <div class="controls">
-    <button onclick="startMic()">Start Microphone</button>
-    <button onclick="testGrowth()">Test Growth</button>
-    <button onclick="resetTree()">Reset Tree</button>
-  </div>
+  <button onclick="startMic()">Start Microphone</button>
+  <button onclick="resetTree()">Reset</button>
 
   <div id="canvas-container"></div>
-
-  <section class="instructions">
-    <h2>Instructions</h2>
-    <p>1. Click <b>Start Microphone</b></p>
-    <p>2. Allow microphone access</p>
-    <p>3. Clap loudly or speak near your laptop mic</p>
-    <p>4. Watch the tree grow 🌿</p>
-  </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
