@@ -7,10 +7,13 @@
 <body>
 
   <h1>🌳 Sound Reactive Tree</h1>
-  <p>Click Start, allow mic, then clap or speak.</p>
+  <p>Click Start Microphone, allow access, then clap or speak.</p>
 
-  <button onclick="startMic()">Start Microphone</button>
-  <button onclick="resetTree()">Reset</button>
+  <div class="controls">
+    <button id="startBtn">Start Microphone</button>
+    <button id="testBtn">Test Growth</button>
+    <button id="resetBtn">Reset</button>
+  </div>
 
   <div id="canvas-container"></div>
 
