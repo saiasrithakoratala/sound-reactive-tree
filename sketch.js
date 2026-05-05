@@ -3,9 +3,10 @@ let smoothedLevel = 0;
 let growthLevel = 0;
 let targetGrowth = 0;
 let started = false;
-let testMode = false;
-let testTimer = 0;
 let statusMessage = "Click Start Microphone";
+
+// store fruit positions so they don't flicker
+let fruitSpots = [];
 
 function setup() {
   let canvas = createCanvas(900, 700);
@@ -25,7 +26,7 @@ function draw() {
 
   let level = 0;
 
-  if (started && !testMode) {
+  if (started) {
     level = mic.getLevel();
     smoothedLevel = lerp(smoothedLevel, level, 0.12);
 
@@ -33,27 +34,11 @@ function draw() {
     targetGrowth = constrain(targetGrowth, 0, 1);
   }
 
-  if (testMode) {
-    testTimer++;
-
-    if (testTimer < 120) {
-      targetGrowth = 1;
-    } else {
-      targetGrowth = 0;
-    }
-
-    if (testTimer > 280) {
-      testMode = false;
-      started = false;
-      targetGrowth = 0;
-      statusMessage = "Test complete";
-    }
-  }
-
+  // smooth growth & faster decay
   if (targetGrowth > growthLevel) {
     growthLevel = lerp(growthLevel, targetGrowth, 0.08);
   } else {
-    growthLevel = lerp(growthLevel, targetGrowth, 0.025);
+    growthLevel = lerp(growthLevel, targetGrowth, 0.08);
   }
 
   growthLevel = constrain(growthLevel, 0, 1);
@@ -70,65 +55,35 @@ function draw() {
   pop();
 
   drawInfo(level, growthLevel, depth);
-
-  if (!started && !testMode && growthLevel < 0.02) {
-    showStartScreen();
-  }
 }
 
 function startMic() {
   userStartAudio();
   getAudioContext().resume();
 
-  testMode = false;
-  started = true;
-  statusMessage = "Microphone starting...";
-
   mic.start(
-    function () {
+    () => {
       started = true;
       statusMessage = "Microphone ON - speak or clap";
     },
-    function () {
-      started = false;
-      statusMessage = "Microphone failed - check browser permission";
+    () => {
+      statusMessage = "Microphone failed - use Test Growth";
     }
   );
 }
 
 function testGrowth() {
   started = true;
-  testMode = true;
-  testTimer = 0;
-  targetGrowth = 0;
-  growthLevel = 0;
-  statusMessage = "Test Growth: smooth grow and decay";
+  targetGrowth = 1;
+  statusMessage = "Test mode";
 }
 
 function resetTree() {
   growthLevel = 0;
   targetGrowth = 0;
   smoothedLevel = 0;
-  testMode = false;
-  started = false;
-  statusMessage = "Click Start Microphone";
-}
-
-function showStartScreen() {
-  fill(255, 245);
-  rect(170, 170, 560, 260, 25);
-
-  fill(20);
-  textAlign(CENTER);
-  textSize(32);
-  text("Sound Reactive Fractal Tree", width / 2, 240);
-
-  textSize(18);
-  text(statusMessage, width / 2, 300);
-  text("Click Start Microphone to use sound", width / 2, 340);
-  text("Click Test Growth to preview animation", width / 2, 380);
-
-  textAlign(LEFT);
+  fruitSpots = [];
+  statusMessage = "Reset complete";
 }
 
 function branch(len, depth, angle, leafAmount) {
@@ -176,30 +131,33 @@ function branch(len, depth, angle, leafAmount) {
 }
 
 function drawLeavesAndFruits(leafAmount) {
-  if (leafAmount < 0.2) return;
+  if (leafAmount < 0.25) return;
 
   noStroke();
 
-  let leafSize = map(leafAmount, 0.2, 1, 7, 15);
+  let leafSize = map(leafAmount, 0.25, 1, 8, 14);
 
-  fill(55, 180, 75, 210);
+  // leaves
+  fill(55, 180, 75, 220);
   ellipse(-5, -3, leafSize, leafSize * 0.75);
   ellipse(5, -3, leafSize, leafSize * 0.75);
   ellipse(0, 3, leafSize, leafSize * 0.75);
 
-  if (leafAmount > 0.55) {
-    fill(230, 45, 45);
-    circle(0, -7, 4);
+  // add fruit spots only once (no flicker)
+  if (fruitSpots.length < 40 && leafAmount > 0.65) {
+    fruitSpots.push({
+      x: random(-6, 6),
+      y: random(-10, 5),
+      type: random(["red", "orange"])
+    });
   }
 
-  if (leafAmount > 0.72) {
-    fill(255, 160, 40);
-    circle(-5, 2, 4);
-  }
+  // draw fruits
+  for (let f of fruitSpots) {
+    if (f.type === "red") fill(220, 40, 40);
+    else fill(255, 170, 40);
 
-  if (leafAmount > 0.88) {
-    fill(255, 220, 70);
-    circle(5, 2, 4);
+    circle(f.x, f.y, 5);
   }
 }
 
